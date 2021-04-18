@@ -2,21 +2,25 @@ import Card from '../UI/Card';
 
 import classes from './AddUser.module.css';
 import Button from '../UI/Button';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import ErrorModal from '../UI/ErrorModal';
 import Wrapper from '../Helpers/Wrapper';
 
 function AddUser(props) {
+    const nameInputRef = useRef();
+    const ageInputRef = useRef();
+
     const initialState = {
-        name: '',
-        age: '',
         error: null
     };
     const [state, setState] = useState(initialState);
 
     function addUserHandler(event) {
         event.preventDefault();
-        if (state.name.trim().length === 0 || state.age.trim().length === 0) {
+        const enteredName = nameInputRef.current.value;
+        const enteredAge = ageInputRef.current.value;
+
+        if (enteredName.trim().length === 0 || enteredAge.trim().length === 0) {
             setState(prevState => {
                 return {
                     ...prevState,
@@ -29,7 +33,7 @@ function AddUser(props) {
             return;
         }
 
-        if (+state.age < 1) {
+        if (+enteredAge < 1) {
             setState(prevState => {
                 return {
                     ...prevState,
@@ -42,27 +46,13 @@ function AddUser(props) {
             return;
         }
 
-        console.log(state);
-        props.onAddUser(state);
-        setState(initialState);
-    }
-
-    function usernameChangeHandler(event) {
-        setState(prevState => {
-            return {
-                ...prevState,
-                name: event.target.value
-            }
+        // console.log(state);
+        props.onAddUser({
+            name: enteredName,
+            age: enteredAge
         });
-    }
-
-    function ageChangeHandler(event) {
-        setState(prevState => {
-            return {
-                ...prevState,
-                age: event.target.value
-            }
-        });
+        nameInputRef.current.value = '';
+        ageInputRef.current.value = '';
     }
 
     function errorHandler() {
@@ -76,13 +66,14 @@ function AddUser(props) {
 
     return (
         <Wrapper>
-            {state.error && <ErrorModal title={state.error.title} message={state.error.message} onConfirm={errorHandler} />}
+            {state.error &&
+            <ErrorModal title={state.error.title} message={state.error.message} onConfirm={errorHandler}/>}
             <Card className={classes.input}>
                 <form onSubmit={addUserHandler}>
                     <label htmlFor="username">Username</label>
-                    <input id="username" type="text" value={state.name} onChange={usernameChangeHandler}/>
+                    <input id="username" ref={nameInputRef} type="text"/>
                     <label htmlFor="age">Age</label>
-                    <input id="age" type="number" value={state.age} onChange={ageChangeHandler}/>
+                    <input id="age" ref={ageInputRef} type="number"/>
                     <Button type={`submit`}>Add User</Button>
                 </form>
             </Card>
