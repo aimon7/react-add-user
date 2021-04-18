@@ -20,7 +20,7 @@ function AddUser(props) {
             return;
 
         console.log(state);
-
+        props.onAddUser(state);
         setState(initialState);
     }
 

@@ -9,13 +9,18 @@ function App() {
     }
     const [state, setState] = useState(initialState);
 
-    function usersHandler() {
-
+    function usersHandler(user) {
+        setState(prevState => {
+            return {
+                ...prevState,
+                users: [...prevState.users, user]
+            }
+        })
     }
 
     return (
         <div>
-            <AddUser/>
+            <AddUser onAddUser={usersHandler} />
             <UsersList users={state.users}/>
         </div>
     );
